@@ -35,7 +35,8 @@ export async function getStaticProps(context) {
 
   const product = data.products.find((product) => product.id === productId);
 
-  // If there is no product, send notFound to the page so it shows he 404 page instead.
+  /* If there is no product, 
+  send notFound to the page so it shows he 404 page instead. */
   if (!product) {
     return { notFound: true };
   }
