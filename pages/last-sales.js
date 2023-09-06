@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
+import { getStaticPaths } from "./products/[pid]";
 
-function LastSalesPage() {
-  const [sales, setSales] = useState();
+function LastSalesPage(props) {
+  const [sales, setSales] = useState(props.sales);
   /* const [isLoading, setIsLoading] = useState(false); */
 
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
   const requestUrl = "https://nextjs-dummy-backend-1fdba-default-rtdb.europe-west1.firebasedatabase.app/sales.json";
 
+  // Built in fetcher...
   /* const { data, error } = useSWR(requestUrl, (url) => fetch(url).then((res) => res.json())); */
+
   const { data, error } = useSWR(requestUrl, fetcher);
 
   useEffect(() => {
@@ -59,6 +62,21 @@ function LastSalesPage() {
         </li>
       ))}
     </ul>
+  );
+}
+
+export async function getStaticProps() {
+  return fetch("https://nextjs-dummy-backend-1fdba-default-rtdb.europe-west1.firebasedatabase.app/sales.json").then(
+    (response) =>
+      response.json().then((data) => {
+        const transformedSales = [];
+
+        for (const key in data) {
+          transformedSales.push({ id: key, username: data[key].username, volume: data[key].volume });
+        }
+
+        return { props: { sales: transformedSales }, revalidate: 10 };
+      })
   );
 }
 
